@@ -20,6 +20,7 @@ This repository contains packages to integrate ChirpStack components into
 
 ### `/semtech`
 
+* [basicstation](https://github.com/lorabasics/basicstation/)
 * [libloragw-2g4](https://github.com/Lora-net/gateway_2g4_hal/)
 * [libloragw-sx1301](https://github.com/brocaar/lora_gateway/)
 * [libloragw-sx1302](https://github.com/brocaar/sx1302_hal/)
