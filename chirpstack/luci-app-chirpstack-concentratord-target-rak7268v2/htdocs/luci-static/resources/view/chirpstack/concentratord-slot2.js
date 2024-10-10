@@ -5,15 +5,18 @@
 return view.extend({
     render: function () {
         const options = {
-            allowSelectInterface: false,
+            hideFields: {
+                usb: true,
+                gnss: false
+            },
             chipsets: [
                 {
                     id: "sx1302",
                     name: "SX1302 / SX1303",
                     shields: [
                         {
-                            id: "rak_5146",
-                            name: "RAK - RAK5146",
+                            id: "rak_2287",
+                            name: "RAK - RAK2287",
                             supportedRegions: ["AS923", "AS923_2", "AS923_3", "AS923_4", "AU915", "CN470", "EU433", "EU868", "IN865", "KR920", "RU864", "US915"],
                             defaultFlags: {
                                 usb: true,
