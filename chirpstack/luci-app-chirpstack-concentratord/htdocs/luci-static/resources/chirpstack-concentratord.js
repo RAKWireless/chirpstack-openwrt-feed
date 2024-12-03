@@ -1,4 +1,4 @@
-use strict';
+'use strict';
 'require baseclass';
 'require form';
 'require uci';
@@ -31,8 +31,6 @@ return baseclass.extend({
         for (const chipset of options.chipsets) {
             o.value(chipset.id, chipset.name);
         }
-
-        const allowSelectInterface = (options.allowSelectInterface === undefined) || (options.allowSelectInterface);
 
         // chipset options
         for (const chipset of options.chipsets) {
