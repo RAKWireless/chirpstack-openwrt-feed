@@ -57,6 +57,9 @@ define Build/Compile
 	rm -rf $(TMP_DIR)/npm-cache-$(TMPNPM)
 endef
 
+define Package/node-red/conffiles
+	/etc/config/node-red
+endef
 
 define Package/node-red/install
 	$(INSTALL_DIR) $(1)/usr/lib/node/$(PKG_NPM_NAME)
@@ -64,6 +67,9 @@ define Package/node-red/install
 	$(CP) $(PKG_BUILD_DIR)/{*.js,*.json,*.md} $(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{node_modules,lib} $(1)/usr/lib/node/$(PKG_NPM_NAME)/
 	$(CP) $(PKG_BUILD_DIR)/{LICENSE,bin}      $(1)/usr/lib/node/$(PKG_NPM_NAME)/
+
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/node-red.config $(1)/etc/config/node-red
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/node-red.init $(1)/etc/init.d/node-red

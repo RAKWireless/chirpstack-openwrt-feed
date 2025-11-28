@@ -1,0 +1,10 @@
+{
+    "admin/services/node-red": {
+        "title": "Node-RED",
+        "order": 20,
+        "action": {
+            "type": "view",
+            "path": "node-red/node-red"
+        }
+    }
+}
