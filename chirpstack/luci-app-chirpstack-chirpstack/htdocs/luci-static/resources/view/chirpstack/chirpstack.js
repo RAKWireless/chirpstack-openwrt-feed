@@ -7,8 +7,14 @@ return view.extend({
     render: function () {
         var m, s, o, ro, as;
 
-        m = new form.Map('chirpstack', _('ChirpStack'), _('ChirpStack is an open-source LoRaWAN(R) Network Server.'));
+        m = new form.Map('chirpstack', _('ChirpStack LNS'), _('ChirpStack is an open-source LoRaWAN(R) Network Server.'));
         m.tabbed = true;
+
+        // Global
+        s = m.section(form.TypedSection, 'global', _('Global settings'));
+        s.anonymous = true;
+        s.option(form.Flag, 'enabled', _('Enabled'), _('Enable ChirpStack LNS (access the UI <a href="/apps/chirpstack/" target="_blank">here</a>)'));
+
 
         s = m.section(form.TypedSection, 'network', _('Network'));
         s.anonymous = true;
@@ -32,6 +38,10 @@ return view.extend({
 
             return "Enter a valid region identifier.";
         };
+
+        s = m.section(form.TypedSection, 'restapi', _('REST API'));
+        s.anonymous = true;
+        s.option(form.Flag, 'enabled', _('Enabled'), _('Enable ChirpStack REST (access the UI <a href="/apps/chirpstack-rest-api/" target="_blank">here</a>)'));
 
         return m.render();
     }

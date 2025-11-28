@@ -67,6 +67,7 @@ configuration() {
 }
 
 start_service() {
+	[ "$(uci get $PACKAGE_NAME.@global[0].enabled)" != "1" ] && return 1
 	configuration
 	mkdir -p /srv/chirpstack
 
