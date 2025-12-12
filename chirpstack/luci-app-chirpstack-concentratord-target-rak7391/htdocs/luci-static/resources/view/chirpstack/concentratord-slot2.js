@@ -7,9 +7,48 @@ return view.extend({
         const options = {
             chipsets: [
                 {
+                    id: "sx1301",
+                    name: "SX1301",
+                    shields: [
+                        {
+                            id: "rak_2245",
+                            name: "RAK - RAK2245",
+                            supportedRegions: ["AS923", "AS923_2", "AS923_3", "AS923_4", "AU915", "EU868", "IN865", "KR920", "RU864", "US915", "CN470", "EU433"],
+                            defaultFlags: {
+                                gnss: true,
+                            },
+                        },
+                        {
+                            id: "rak_2246",
+                            name: "RAK - RAK2246",
+                            supportedRegions: ["AS923", "AS923_2", "AS923_3", "AS923_4", "AU915", "EU868", "IN865", "KR920", "RU864", "US915", "CN470", "EU433"],
+                            defaultFlags: {
+                                gnss: true,
+                            },
+                        },
+                        {
+                            id: "rak_2247",
+                            name: "RAK - RAK2247",
+                            supportedRegions: ["AS923", "AS923_2", "AS923_3", "AS923_4", "AU915", "EU868", "IN865", "KR920", "RU864", "US915", "CN470", "EU433"],
+                            defaultFlags: {
+                                gnss: true,
+                            },
+                        },
+                    ]
+                },
+                {
                     id: "sx1302",
                     name: "SX1302 / SX1303",
                     shields: [
+                        {
+                            id: "rak_2287",
+                            name: "RAK - RAK2287",
+                            supportedRegions: ["AS923", "AS923_2", "AS923_3", "AS923_4", "AU915", "CN470", "EU433", "EU868", "IN865", "KR920", "RU864", "US915"],
+                            defaultFlags: {
+                                gnss: true,
+                                usb: true,
+                            },
+                        },
                         {
                             id: "rak_5146",
                             name: "RAK - RAK5146",
