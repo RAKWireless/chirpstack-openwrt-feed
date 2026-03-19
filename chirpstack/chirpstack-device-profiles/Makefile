@@ -4,8 +4,8 @@ PKG_NAME:=chirpstack-device-profiles
 PKG_RELEASE:=1
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/chirpstack/chirpstack-device-profiles.git
-PKG_SOURCE_VERSION:=c9c4d7f1835b595b0f63a9a3ac647f0e201ab088
-PKG_SOURCE_DATE:=2026-01-12
+PKG_SOURCE_VERSION:=eeffa23f27218416cf6f53b70505c84a758e9677
+PKG_SOURCE_DATE:=2026-03-12
 
 PKG_MAINTAINER:=Orne Brocaar <info@brocaar.com>
 PKG_LICENSE:=MIT
