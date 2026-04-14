@@ -134,6 +134,26 @@ return view.extend({
               },
             },
             {
+              id: "elecrow_lr1302",
+              name: "Elecrow - LR1302",
+              supportedRegions: [
+                "AS923",
+                "AS923_2",
+                "AS923_3",
+                "AS923_4",
+                "AU915",
+                "EU868",
+                "IN865",
+                "KR920",
+                "RU864",
+                "US915",
+              ],
+              defaultFlags: {
+                gnss: false,
+                usb: false,
+              },
+            },
+            {
               id: "embit_emb_lr1302_mpcie",
               name: "Embit - EMB-LR1302-mPCIe",
               supportedRegions: [
