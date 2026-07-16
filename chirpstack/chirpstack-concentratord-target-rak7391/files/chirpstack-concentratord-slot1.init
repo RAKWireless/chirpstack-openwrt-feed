@@ -32,3 +32,36 @@ reload_service() {
 	stop
 	start
 }
+
+# RAK7391: D3 status LED tracks "any concentratord slot up". sysfs path is
+# only present when the rak7391 device-tree overlay is applied — silently
+# no-op otherwise so this file stays portable across boards.
+#
+# Timing notes:
+#   - service_started fires before procd actually forks the daemon, and
+#     stop_service fires before procd has killed it (procd_kill is async).
+#     Both hooks run a short delay in the background so the pidof check
+#     reflects post-transition state.
+#   - service_stopped is not invoked for short-lived init scripts (the
+#     script exits before the ubus event arrives), so the stop path is
+#     wired through stop_service instead.
+STATUS_LED=/sys/class/leds/rak7391:green:status/brightness
+
+update_status_led() {
+	[ -w "$STATUS_LED" ] || return 0
+	if pidof chirpstack-concentratord-sx1301 \
+	         chirpstack-concentratord-sx1302 \
+	         chirpstack-concentratord-2g4 >/dev/null 2>&1; then
+		echo 1 > "$STATUS_LED"
+	else
+		echo 0 > "$STATUS_LED"
+	fi
+}
+
+service_started() {
+	( sleep 2 && update_status_led ) &
+}
+
+stop_service() {
+	( sleep 2 && update_status_led ) &
+}
