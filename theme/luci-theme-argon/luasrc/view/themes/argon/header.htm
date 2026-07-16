@@ -81,6 +81,9 @@
 				<style title="text/css">
 					<% if mode~='dark' then %>@media (prefers-color-scheme: dark) {
 						<%=dark_css%>
+						.brand img {
+							filter: invert(1);
+						}
 					}
 
 					<% if fs.access('/etc/config/argon') then %>:root {

@@ -1,0 +1,13 @@
+if [ "$(uci -q get luci_statistics.collectd_exec.enable)" != "1" ]; then
+  uci set luci_statistics.collectd_exec.enable=1
+fi
+
+uci -q show luci_statistics | grep -q "chirpstack-gateway-utils"
+if [ $? -eq 1 ]; then
+  uci add luci_statistics collectd_exec_input
+  uci set luci_statistics.@collectd_exec_input[-1].cmdline='/usr/bin/chirpstack-gateway-utils collectd'
+  uci set luci_statistics.@collectd_exec_input[-1].cmduser='nobody'
+  uci set luci_statistics.@collectd_exec_input[-1].cmdgroup='dialout'
+fi
+
+uci commit luci_statistics
