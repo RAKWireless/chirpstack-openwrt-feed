@@ -1,11 +1,53 @@
 'use strict';
 'require view';
 'require form';
+'require fs';
 'require uci';
 
+/* Offer a concentratord slot only when its UCI config is actually installed —
+ * a single-slot gateway must not present "Slot 2". The currently configured
+ * value is always kept, so an existing setting is never silently dropped. */
+function addSlotOptions(o, configs, current) {
+  var slots = [
+    ['chirpstack-concentratord', 'ipc:///tmp/concentratord_event', _('Concentratord (single slot gateway)')],
+    ['chirpstack-concentratord-slot1', 'ipc:///tmp/concentratord_slot1_event', _('Concentratord - Slot 1')],
+    ['chirpstack-concentratord-slot2', 'ipc:///tmp/concentratord_slot2_event', _('Concentratord - Slot 2')]
+  ];
+  var present = {}, added = 0;
+
+  (configs || []).forEach(function(e) { present[e.name] = true; });
+
+  slots.forEach(function(s) {
+    if (present[s[0]] || s[1] === current) {
+      o.value(s[1], s[2]);
+      added++;
+    }
+  });
+
+  /* Detected nothing (e.g. the listing was denied): offer every slot rather
+   * than render an empty dropdown. */
+  if (!added)
+    slots.forEach(function(s) { o.value(s[1], s[2]); });
+}
+
+/* These backend sections are anonymous, so the stored value has to be looked
+ * up by section type rather than by name. */
+function currentEventUrl(type) {
+  var sections = uci.sections('chirpstack-gateway-mesh', type);
+  return (sections && sections.length) ? sections[0].event_url : null;
+}
+
 return view.extend({
-  render: function() {
+  load: function() {
+    return Promise.all([
+      L.resolveDefault(fs.list('/etc/config'), []),
+      uci.load('chirpstack-gateway-mesh')
+    ]);
+  },
+
+  render: function(data) {
     var m, s, o, ro, as;
+    var configs = data[0];
 
     m = new form.Map('chirpstack-gateway-mesh', _('ChirpStack Gateway Mesh'), _('ChirpStack Gateway Mesh turns a LoRa gateway into a Border or Relay Gateway.'));
     m.tabbed = true;
@@ -262,9 +304,7 @@ return view.extend({
 
     // Event url + Command url
     o = s.option(form.ListValue, 'event_url', _('Slot'));
-    o.value('ipc:///tmp/concentratord_event', 'Concentratord (single slot gateway)');
-    o.value('ipc:///tmp/concentratord_slot1_event', 'Concentratord - Slot 1');
-    o.value('ipc:///tmp/concentratord_slot2_event', 'Concentratord - Slot 2');
+    addSlotOptions(o, configs, currentEventUrl('backend_concentratord'));
 
     o.onchange = function(target, section_id, value) {
       uci.set('chirpstack-gateway-mesh', section_id, 'command_url', value.replace("_event", "_command"));
@@ -275,9 +315,7 @@ return view.extend({
 
     // Event url + Command url
     o = s.option(form.ListValue, 'event_url', _('Slot'));
-    o.value('ipc:///tmp/concentratord_event', 'Concentratord (single slot gateway)');
-    o.value('ipc:///tmp/concentratord_slot1_event', 'Concentratord - Slot 1');
-    o.value('ipc:///tmp/concentratord_slot2_event', 'Concentratord - Slot 2');
+    addSlotOptions(o, configs, currentEventUrl('backend_mesh_concentratord'));
 
     o.onchange = function(target, section_id, value) {
       uci.set('chirpstack-gateway-mesh', section_id, 'command_url', value.replace("_event", "_command"));
