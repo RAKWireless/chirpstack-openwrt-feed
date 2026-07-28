@@ -1,0 +1,73 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=99
+
+USE_PROCD=1
+CHIPSET=
+PACKAGE_NAME="chirpstack-concentratord-slot1"
+
+configuration() {
+	. /lib/functions/chirpstack-concentratord.sh
+	configure "$PACKAGE_NAME"
+}
+
+start_service() {
+	[ "$(uci get $PACKAGE_NAME.@global[0].enabled)" != "1" ] && return 1
+
+	configuration
+
+	procd_open_instance 
+	procd_set_param command /usr/bin/chirpstack-concentratord-$CHIPSET -c /var/etc/$PACKAGE_NAME/concentratord.toml -c /var/etc/$PACKAGE_NAME/region.toml -c /var/etc/$PACKAGE_NAME/channels.toml
+	procd_set_param respawn 3600 5 -1
+	procd_set_param file /etc/config/$PACKAGE_NAME
+	procd_close_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$PACKAGE_NAME"
+}
+
+reload_service() {
+	stop
+	start
+}
+
+# RAK7392: the BLUE channel of the RGB USER LED tracks "concentratord up".
+# PWR and STATUS are hardware-driven and not software-controllable, so the
+# USER LED is the only one available, and its three channels are divided up:
+# green is owned by the netdev trigger (WAN link/tx/rx, bound in the board's
+# 30_rak7392_hardware_hooks), red is reserved for fault, and blue is left with
+# trigger 'none' so it can be driven directly from here. Do not move this to
+# green: a netdev trigger owns brightness, so these writes would be overridden.
+# sysfs path is only present when the rak7392 device-tree overlay is applied —
+# silently no-op otherwise so this file stays portable across boards.
+#
+# Timing notes:
+#   - service_started fires before procd actually forks the daemon, and
+#     stop_service fires before procd has killed it (procd_kill is async).
+#     Both hooks run a short delay in the background so the pidof check
+#     reflects post-transition state.
+#   - service_stopped is not invoked for short-lived init scripts (the
+#     script exits before the ubus event arrives), so the stop path is
+#     wired through stop_service instead.
+STATUS_LED=/sys/class/leds/rak7392:blue:user/brightness
+
+update_status_led() {
+	[ -w "$STATUS_LED" ] || return 0
+	if pidof chirpstack-concentratord-sx1301 \
+	         chirpstack-concentratord-sx1302 \
+	         chirpstack-concentratord-2g4 >/dev/null 2>&1; then
+		echo 1 > "$STATUS_LED"
+	else
+		echo 0 > "$STATUS_LED"
+	fi
+}
+
+service_started() {
+	( sleep 2 && update_status_led ) &
+}
+
+stop_service() {
+	( sleep 2 && update_status_led ) &
+}
