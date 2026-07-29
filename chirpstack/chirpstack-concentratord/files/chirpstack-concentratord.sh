@@ -34,6 +34,7 @@ conf_rule_sx1301() {
 	local model region channel_plan gnss gateway_id
 	local model_flags antenna_gain
 	local sx1301_reset_pin sx1301_reset_chip
+	local event_bind command_bind
 
 	config_get model $cfg model
 	config_get region $cfg region
@@ -44,6 +45,12 @@ conf_rule_sx1301() {
 
 	config_get sx1301_reset_pin $cfg sx1301_reset_pin
 	config_get sx1301_reset_chip $cfg sx1301_reset_chip
+
+	# Honour the slot's bind addresses like conf_rule_sx1302/conf_rule_2g4 do.
+	# These defaults reproduce the values this function used to hardcode, so a
+	# single-slot config that sets neither option is unaffected.
+	config_get event_bind $cfg event_bind "ipc:///tmp/concentratord_event"
+	config_get command_bind $cfg command_bind "ipc:///tmp/concentratord_command"
 
 	local region_config=$(echo "$region" | awk '{print tolower($0)}')
 
@@ -59,8 +66,8 @@ conf_rule_sx1301() {
 			disable_crc_filter=false
 
 		[concentratord.api]
-			event_bind="ipc:///tmp/concentratord_event"
-			command_bind="ipc:///tmp/concentratord_command"
+			event_bind="$event_bind"
+			command_bind="$command_bind"
 
 		[gateway]
 			lorawan_public=true
